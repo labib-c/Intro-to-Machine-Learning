@@ -1,0 +1,29 @@
+digraph Tree {
+node [shape=box, style="filled, rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label=<the &le; 0.5<br/>entropy = 0.965<br/>samples = 2286<br/>value = [891, 1395]<br/>class = real>, fillcolor="#399de55c"] ;
+1 [label=<hillary &le; 0.5<br/>entropy = 0.918<br/>samples = 1909<br/>value = [635, 1274]<br/>class = real>, fillcolor="#399de580"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label=<donald &le; 0.5<br/>entropy = 0.886<br/>samples = 1801<br/>value = [547, 1254]<br/>class = real>, fillcolor="#399de590"] ;
+1 -> 2 ;
+3 [label="(...)", fillcolor="#C0C0C0"] ;
+2 -> 3 ;
+456 [label="(...)", fillcolor="#C0C0C0"] ;
+2 -> 456 ;
+599 [label=<clinton &le; 0.5<br/>entropy = 0.691<br/>samples = 108<br/>value = [88, 20]<br/>class = fake>, fillcolor="#e58139c5"] ;
+1 -> 599 ;
+600 [label="(...)", fillcolor="#C0C0C0"] ;
+599 -> 600 ;
+603 [label="(...)", fillcolor="#C0C0C0"] ;
+599 -> 603 ;
+632 [label=<trumps &le; 0.5<br/>entropy = 0.905<br/>samples = 377<br/>value = [256, 121]<br/>class = fake>, fillcolor="#e5813986"] ;
+0 -> 632 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+633 [label=<hillary &le; 0.5<br/>entropy = 0.88<br/>samples = 365<br/>value = [256, 109]<br/>class = fake>, fillcolor="#e5813992"] ;
+632 -> 633 ;
+634 [label="(...)", fillcolor="#C0C0C0"] ;
+633 -> 634 ;
+807 [label="(...)", fillcolor="#C0C0C0"] ;
+633 -> 807 ;
+808 [label=<entropy = 0.0<br/>samples = 12<br/>value = [0, 12]<br/>class = real>, fillcolor="#399de5ff"] ;
+632 -> 808 ;
+}
