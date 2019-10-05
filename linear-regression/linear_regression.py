@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def shuffle_data(data):
-    assert len(data['X']) == len(data['t'])
+    assert data['X'].shape[0] == data['t'].shape[0]
     p = np.arange(0, len(data['X']), 1)
     np.random.shuffle(p)
     return {'X': data['X'][p], 't': data['t'][p]}
@@ -27,7 +27,7 @@ def train_model(data, lambd):
     lambdaI = np.identity(XtX.shape[0])*lambd
     XtX_sum_lambda = XtX + lambdaI
     first_term = np.linalg.inv(XtX_sum_lambda)
-    XTt = np.dot(X.transpose(), t)
+    XTt = X.transpose().dot(t)
     return first_term.dot(XTt)
 
 def predict(data, model):
@@ -65,14 +65,22 @@ if __name__ == '__main__':
     five_fold = cross_validation(data_train, 5, lambd_seq)
     ten_fold = cross_validation(data_train, 10, lambd_seq)
 
-    fig = plt.figure(figsize=(10,5))
-    plt.xticks(np.arange(0.02, 1.5, 0.1))
-    plt.xlabel("Lambda Sequence")
-    plt.ylabel("Errors")
-    plt.plot(lambd_seq, train_error, color='tab:blue', label='training error')
-    plt.plot(lambd_seq, test_error, color='tab:green', label='test error')
-    plt.plot(lambd_seq, five_fold, color='tab:red', label='5-fold CV')
-    plt.plot(lambd_seq, ten_fold, color='tab:orange', label='10-fold CV')
-    plt.legend()
-    plt.show()
-    fig.savefig('cv.png')
+    min_idx_five = five_fold.index(min(five_fold))
+    min_idx_ten = ten_fold.index(min(ten_fold))
+    train_idx = train_error.index(min(train_error))
+    test_idx = test_error.index(min(test_error))
+
+    print("The minimum λ for five-fold CV is {}".format(lambd_seq[min_idx_five].round(4)) )
+    print("The minimum λ for ten-fold CV is {}".format(lambd_seq[min_idx_ten].round(4)))
+    print("The minimum λ for training error is {}".format(lambd_seq[train_idx].round(4)))
+    print("The minimum λ for test error is {}".format(lambd_seq[test_idx].round(4)))
+    # fig = plt.figure(figsize=(10,5))
+    # plt.xticks(np.arange(0.02, 1.5, 0.1))
+    # plt.xlabel("Lambda Sequence")
+    # plt.ylabel("Errors")
+    # plt.plot(lambd_seq, train_error, color='tab:blue', label='training error')
+    # plt.plot(lambd_seq, test_error, color='tab:green', label='test error')
+    # plt.plot(lambd_seq, five_fold, color='tab:red', label='5-fold CV')
+    # plt.plot(lambd_seq, ten_fold, color='tab:orange', label='10-fold CV')
+    # plt.legend()
+    # fig.savefig('cv.png')

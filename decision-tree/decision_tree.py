@@ -2,16 +2,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.tree import export_graphviz
-from os import system
-import pydotplus
-import numpy as np
 import pandas as pd
 import random
 import math
 
 FAKE_DATA = './data/clean_fake.txt'
 REAL_DATA = './data/clean_real.txt'
-DEPTHS = [150,311,625,1250,2500]
+DEPTHS = [50,200,300,400,1000]
 
 vectorizer = CountVectorizer()
 
@@ -90,14 +87,13 @@ def make_tree_image(clf):
     call(['dot', '-Tpng', 'dtree.dot', '-o', 'dtree.png', '-Gdpi=600'])
     
 def compute_informatian_gain(Y, x_i):
-    return get_entropy(Y) - get_conditional_entropy(Y, x_i) 
+    return get_entropy(Y) - get_conditional_entropy(Y, x_i)
 
 def get_entropy(Y):
-    real = Y[Y['label'] == 'real'].count()['label']
-    fake = Y[Y['label'] == 'fake'].count()['label']
+    real = Y['label'].value_counts()['real']
+    fake = Y['label'].value_counts()['fake']
     total = real+fake
-    print(real)
-    print(fake)
+
     p_real = real / total
     p_fake = fake/ total
     return -(p_real*log(p_real, 2) + p_fake*log(p_fake, 2))
@@ -107,6 +103,7 @@ def log(prob, base):
         return 0
     else:
         return math.log(prob)
+
 def get_conditional_entropy(Y, x_i):
     pattern = '\\b'+x_i+'\\b' #regex to get exact match rather than contains
     contains_xi = Y[Y['headline'].str.contains(pattern, regex = True)]
@@ -127,12 +124,9 @@ def get_conditional_entropy(Y, x_i):
     return (c_total/(c_total+w_total))*c_entropy + (w_total/(c_total+w_total))*w_entropy
 
 if __name__ == "__main__":
-    # print("Best model: {}".format(select_model()))
-    X_train, y_train, X_test, y_test, X_val, y_val = load_data()
+    print("Best model: {}".format(select_model()))
     Y = label_and_shuffle_data()
-    print(get_entropy(y_train))
-    x_i = 'the'
-    print("IG:{}, word: {}".format(compute_informatian_gain(Y, x_i), x_i))
-
-
+    words = ['the', 'hillary', 'trumps', 'donald', 'clinton', 'are', 'doesntexist', 'bathrooms','kushner', 'hoax', 'impeach']
+    for x_i in words:
+        print("IG:{}, word: {}".format(compute_informatian_gain(Y, x_i), x_i))
 
