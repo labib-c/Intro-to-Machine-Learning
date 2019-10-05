@@ -10,22 +10,25 @@ def shuffle_data(data):
 def split_data(data, num_folds, fold):
     split_X = np.array_split(data['X'], num_folds)
     split_t = np.array_split(data['t'], num_folds)
-    rest_X = np.array(split_X[0:fold-1]+split_X[fold:len(split_X)])
-    rest_X_flat = rest_X.reshape(-1, rest_X.shape[-1])
-    rest_t = np.array(split_t[0:fold-1]+split_t[fold:len(split_t)]).flatten()
-    data_fold = {'X': np.array(split_X[fold-1]), 't': np.array(split_t[fold-1])}
-    data_rest = {'X': rest_X_flat, 't': rest_t}
+
+    fold_X = split_X.pop(fold-1)
+    fold_t = split_t.pop(fold-1)
+
+    data_fold = {'X': np.array(fold_X), 't': np.array(fold_t)}
+    data_rest = {'X': np.vstack(split_X), 't': np.array(split_t).flatten()}
     return data_fold, data_rest
 
 def train_model(data, lambd):
     # (X^T*X + lambd*I)^-1*X^T*t
+
     X = data['X']
     t = data['t']
     XtX = np.dot(X.transpose(), X)
     lambdaI = np.identity(XtX.shape[0])*lambd
+    XtX_sum_lambda = XtX + lambdaI
+    first_term = np.linalg.inv(XtX_sum_lambda)
     XTt = np.dot(X.transpose(), t)
-    inverse = np.linalg.inv(XtX+lambdaI)
-    return np.dot(inverse, XTt)
+    return first_term.dot(XTt)
 
 def predict(data, model):
     return np.dot(data['X'], model)
@@ -33,7 +36,7 @@ def predict(data, model):
 def loss(data, model):
     predictions = predict(data, model)
     t = data['t']
-    return (np.linalg.norm(t-predictions)) / t.shape[0]
+    return (np.linalg.norm(t-predictions))**2 / t.shape[0]
 
 def cross_validation(data, num_folds, lambd_seq):
     data = shuffle_data(data)
@@ -52,13 +55,7 @@ if __name__ == '__main__':
     data_train = {'X': np.genfromtxt('./data/data_train_X.csv', delimiter=','), 't': np.genfromtxt('./data/data_train_y.csv', delimiter=',')}
     data_test = {'X': np.genfromtxt('./data/data_test_X.csv', delimiter=','), 't': np.genfromtxt('./data/data_test_y.csv', delimiter=',')}
 
-    # data = shuffle_data(data_train)
-    # data_fold, data_rest = split_data(data, 10, 1)
-    # model = train_model(data_fold, 5)
-    # # print(data_fold['t'].shape)
-    # # print(predict(data_fold, model).shape)
-    # print(loss(data_fold, model))
-    lambd_seq = np.arange(0.02, 1.5, 0.0296)
+    lambd_seq = np.arange(0.02, 1.5, 0.03)
     train_error = []
     test_error = []
     for i in lambd_seq:
@@ -68,5 +65,14 @@ if __name__ == '__main__':
     five_fold = cross_validation(data_train, 5, lambd_seq)
     ten_fold = cross_validation(data_train, 10, lambd_seq)
 
-    print(train_error)
-    
+    fig = plt.figure(figsize=(10,5))
+    plt.xticks(np.arange(0.02, 1.5, 0.1))
+    plt.xlabel("Lambda Sequence")
+    plt.ylabel("Errors")
+    plt.plot(lambd_seq, train_error, color='tab:blue', label='training error')
+    plt.plot(lambd_seq, test_error, color='tab:green', label='test error')
+    plt.plot(lambd_seq, five_fold, color='tab:red', label='5-fold CV')
+    plt.plot(lambd_seq, ten_fold, color='tab:orange', label='10-fold CV')
+    plt.legend()
+    plt.show()
+    fig.savefig('cv.png')
