@@ -1,0 +1,11 @@
+num hidden = 8-40
+CE: Train 0.16676 Validation 1.18869 Test 1.05080
+Acc: Train 0.94576 Validation 0.73031 Test 0.71688
+
+num_hidden = 2-100
+CE: Train 0.78459 Validation 1.20513 Test 1.17698
+Acc: Train 0.70332 Validation 0.59189 Test 0.59740
+
+num_hidden = 50-100
+CE: Train 0.03025 Validation 1.45887 Test 1.25128
+Acc: Train 0.99733 Validation 0.73270 Test 0.75844

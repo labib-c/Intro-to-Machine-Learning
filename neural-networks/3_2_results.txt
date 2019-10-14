@@ -1,0 +1,51 @@
+eps = 0.001
+CE: Train 0.97147 Validation 1.01225 Test 1.03285
+Acc: Train 0.64908 Validation 0.61575 Test 0.58961
+
+eps = 0.01
+CE: Train 0.31663 Validation 1.02895 Test 0.98497
+Acc: Train 0.88530 Validation 0.73986 Test 0.72987
+
+eps = 0.05
+CE: Train 0.39407 Validation 1.05616 Test 0.86163
+Acc: Train 0.86129 Validation 0.70406 Test 0.72987
+
+eps = 0.1
+CE: Train 0.82627 Validation 1.10642 Test 1.17601
+Acc: Train 0.69561 Validation 0.66587 Test 0.62078
+
+eps = 1
+CE: Train 1.86245 Validation 1.86104 Test 1.84036
+Acc: Train 0.28542 Validation 0.27924 Test 0.31688
+
+momentum = 0.0
+CE: Train 0.31663 Validation 1.02895 Test 0.98497
+Acc: Train 0.88530 Validation 0.73986 Test 0.72987
+
+momentum = 0.5
+CE: Train 0.12719 Validation 1.22804 Test 0.94287
+Acc: Train 0.96562 Validation 0.71838 Test 0.73766
+
+momentum = 0.9
+CE: Train 0.09484 Validation 1.33766 Test 1.09314
+Acc: Train 0.97273 Validation 0.72315 Test 0.71169
+
+batch size = 1
+CE: Train 0.96231 Validation 1.91987 Test 1.74456
+Acc: Train 0.73237 Validation 0.65394 Test 0.64935
+
+batch size = 100
+CE: Train 0.31663 Validation 1.02895 Test 0.98497
+Acc: Train 0.88530 Validation 0.73986 Test 0.72987
+
+batch size = 300
+CE: Train 0.83323 Validation 1.00566 Test 0.98799
+Acc: Train 0.68820 Validation 0.66110 Test 0.64935
+
+batch size = 500
+CE: Train 0.84232 Validation 0.91362 Test 0.88931
+Acc: Train 0.69443 Validation 0.64678 Test 0.64675
+
+batch size = 1000
+CE: Train 0.99611 Validation 1.03433 Test 1.05656
+Acc: Train 0.63930 Validation 0.61098 Test 0.60260
