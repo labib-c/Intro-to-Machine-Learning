@@ -41,7 +41,7 @@ def evaluate(targets, y):
         frac_correct : (scalar) Fraction of inputs classified correctly.
     """
     # TODO: Finish this function
-    ce = -np.sum(targets*np.log(y) + (1-targets)*np.log(1-y))/targets.shape[0]
+    ce = -np.sum(targets*np.log(y) + (1-targets)*np.log(1-y))
     apply_thresh = (y > 0.5)
     frac_correct = (targets == apply_thresh).mean()
     return ce, frac_correct
