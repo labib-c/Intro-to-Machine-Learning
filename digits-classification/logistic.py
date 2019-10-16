@@ -18,8 +18,6 @@ def logistic_predict(weights, data):
     Outputs:
         y:          :N x 1 vector of probabilities. This is the output of the classifier.
     """
-
-    # TODO: Finish this function
     # data = valid_inputs
     # z = w^Tx +b
     # y = sigmoid(z)
@@ -40,8 +38,7 @@ def evaluate(targets, y):
         ce           : (scalar) Cross entropy. CE(p, q) = E_p[-log q]. Here we want to compute CE(targets, y)
         frac_correct : (scalar) Fraction of inputs classified correctly.
     """
-    # TODO: Finish this function
-    ce = -np.sum(targets*np.log(y) + (1-targets)*np.log(1-y))
+    ce = -np.sum(targets*np.logaddexp(0, y) + (1-targets)*np.logaddexp(0, 1-y))
     apply_thresh = (y > 0.5)
     frac_correct = (targets == apply_thresh).mean()
     return ce, frac_correct
@@ -67,8 +64,6 @@ def logistic(weights, data, targets, hyperparameters):
         df:      (M+1) x 1 vector of derivative of f w.r.t. weights.
         y:       N x 1 vector of probabilities.
     """
-
-    # TODO: Finish this function
     y = logistic_predict(weights, data)
     x = np.c_[data, np.ones(data.shape[0])]
     f, frac_correct = evaluate(targets, y)
@@ -97,7 +92,6 @@ def logistic_pen(weights, data, targets, hyperparameters):
         df:            (M+1) x 1 vector of derivative of f w.r.t. weights.
     """
 
-    # TODO: Finish this function
     f, df, y = logistic(weights, data, targets, hyperparameters)
     # TODO: exlcude last row of weights somehow
     f = f + (hyperparameters['weight_regularization']/2)*np.sum(weights**2)

@@ -14,8 +14,8 @@ def run_logistic_regression():
 
     # TODO: Set hyperparameters
     hyperparameters = {
-                    'learning_rate': 1,
-                    'weight_regularization': 0.1,
+                    'learning_rate': 0.1,
+                    'weight_regularization': 0,
                     'num_iterations': 50
                  }
 
