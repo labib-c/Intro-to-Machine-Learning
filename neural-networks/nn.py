@@ -403,5 +403,21 @@ def main():
     # Uncomment if you wish to save the training statistics.
     # Save(stats_fname, stats)
 
+def plot_uncertain_images(x, t, prediction, threshold=0.5):
+    """
+    """
+    low_index = np.max(prediction, axis=1)< threshold
+    class_names = ['anger', 'disgust', 'fear', 'happy', 'sad', 'surprised', 'neutral']
+    if np.sum(low_index)>0:
+        for i in np.where(low_index>0)[0]:
+
+            plt.figure()
+            img_w, img_h = int(np.sqrt(2304)), int(np.sqrt(2304)) #2304 is input size
+            plt.imshow(x[i].reshape(img_h,img_w))
+            plt.title('P_max: {}, Predicted: {}, Target: {}'.format(np.max(prediction[i]), class_names[np.argmax(prediction[i])], class_names[np.argmax(t[i])]))
+            plt.show()
+            input("press enter to continue")
+    return
+    
 if __name__ == '__main__':
     main()
