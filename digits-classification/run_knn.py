@@ -1,4 +1,3 @@
-import numpy as np
 from utils import *
 from sklearn.metrics import accuracy_score
 from l2_distance import l2_distance

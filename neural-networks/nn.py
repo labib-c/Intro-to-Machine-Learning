@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 from util import LoadData, Load, Save, DisplayPlot
+import matplotlib.pyplot as plt
 import sys
 import numpy as np
 
@@ -324,6 +325,7 @@ def Evaluate(inputs, target, model, forward, batch_size=-1):
         ce += -np.sum(t * np.log(prediction))
         acc += (np.argmax(prediction, axis=1) == np.argmax(
             t, axis=1)).astype('float').sum()
+    plot_uncertain_images(x, t, prediction)
     ce /= num_cases
     acc /= num_cases
     return ce, acc
@@ -367,9 +369,9 @@ def main():
     stats_fname = 'nn_stats.npz'
 
     # Hyper-parameters. Modify them if needed.
-    num_hiddens = [50, 100]
+    num_hiddens = [16, 32]
     eps = 0.01
-    momentum = 0.9
+    momentum = 0.5
     num_epochs = 1000
     batch_size = 100
 
@@ -381,7 +383,7 @@ def main():
     model = InitNN(num_inputs, num_hiddens, num_outputs)
 
     # Uncomment to reload trained model here.
-    # model = Load(model_fname)
+    model = Load(model_fname)
 
     # Check gradient implementation.
     print('Checking gradients...')
@@ -415,6 +417,7 @@ def plot_uncertain_images(x, t, prediction, threshold=0.5):
             img_w, img_h = int(np.sqrt(2304)), int(np.sqrt(2304)) #2304 is input size
             plt.imshow(x[i].reshape(img_h,img_w))
             plt.title('P_max: {}, Predicted: {}, Target: {}'.format(np.max(prediction[i]), class_names[np.argmax(prediction[i])], class_names[np.argmax(t[i])]))
+            plt.savefig("pic_{}".format(i))
             plt.show()
             input("press enter to continue")
     return

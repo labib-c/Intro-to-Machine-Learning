@@ -38,7 +38,7 @@ def evaluate(targets, y):
         ce           : (scalar) Cross entropy. CE(p, q) = E_p[-log q]. Here we want to compute CE(targets, y)
         frac_correct : (scalar) Fraction of inputs classified correctly.
     """
-    ce = -np.sum(targets*np.logaddexp(0, y) + (1-targets)*np.logaddexp(0, 1-y))
+    ce = -1*np.sum(targets*np.log(y) + (1-targets)*np.log(1-y)) / targets.shape[0]
     apply_thresh = (y > 0.5)
     frac_correct = (targets == apply_thresh).mean()
     return ce, frac_correct
@@ -93,15 +93,20 @@ def logistic_pen(weights, data, targets, hyperparameters):
     """
 
     f, df, y = logistic(weights, data, targets, hyperparameters)
-    # TODO: exlcude last row of weights somehow
-    f = f + (hyperparameters['weight_regularization']/2)*np.sum(weights**2)
-    df = df + hyperparameters['weight_regularization']*weights
+    weights_no_bias = weights[:-1]
+    bias = sum(np.subtract(y, targets))
+    df += np.append(hyperparameters['weight_regularization']*weights_no_bias, [bias], axis=0)
     return f, df, y
 
 if __name__ == '__main__':
     valid_inputs, valid_targets = load_valid()
-    weights = np.random.rand(valid_inputs.shape[1]+1, 1)
+    weights = np.random.rand(valid_inputs.shape[1]+1, 1)*0.3
     y = logistic_predict(weights, valid_inputs)
     ce, frac_correct = evaluate(valid_targets, y)
-    f, df, y = logistic(weights, valid_inputs, valid_targets, None)
-
+    hyperparameters = {
+                    'learning_rate': 0.1,
+                    'weight_regularization': 0.1,
+                    'num_iterations': 500
+                 }
+    f, df, y = logistic_pen(weights, valid_inputs, valid_targets, hyperparameters)
+    print(df)
