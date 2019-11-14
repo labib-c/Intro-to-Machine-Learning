@@ -130,14 +130,11 @@ def log_likelihood(images, theta, pi):
     Note that log likelihood is not only for c^(i), it is for all possible c's."""
 
     # YOU NEED TO WRITE THIS PART
-    # log_like = np.zeros((images.shape[1], pi.shape[0]))
-    log_like = [0]*len(pi)
+    log_like = np.zeros((images.shape[0], pi.shape[0]))
     for c in range(pi.shape[0]):
-        prod = 1
-        for j in range(images.shape[1]):
-            prod *= theta[c, j]**images[j] * (1-theta[c, j]**(1-images[j]))
-        joint = prod*pi[c]
-        log_like[c] = joint
+        for j in range(images.shape[0]):
+            prod = np.sum(images[j]*np.log(theta[c]) + (1-images[j])*np.log(1-theta[c]))
+            log_like[j, c] = prod
     return log_like
 
 
@@ -146,7 +143,7 @@ def predict(log_like):
     Returns the predictions based on log likelihood values"""
 
     # YOU NEED TO WRITE THIS PART
-    return np.argmax(log_like)
+    return np.argmax(log_like, axis=1)
 
 
 def accuracy(log_like, labels):
