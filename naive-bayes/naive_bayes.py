@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 from __future__ import print_function
 from future.standard_library import install_aliases
+from sklearn.metrics import accuracy_score
+
 install_aliases()
 import numpy as np
 import os
@@ -9,6 +11,7 @@ import struct
 import array
 import matplotlib.pyplot as plt
 import matplotlib.image
+from scipy.special import logsumexp
 from urllib.request import urlretrieve
 
 
@@ -101,8 +104,8 @@ def train_mle_estimator(train_images, train_labels):
     theta_mle = np.zeros((train_labels.shape[1], train_images.shape[1]))
     pi_mle = np.zeros(train_labels.shape[1])
     for c in range(train_labels.shape[1]):
-        x_j = train_images[np.where(np.where(train_labels == 1)[1] == c)[0]]
-        theta_mle[c] = (np.sum(x_j) / classes[c])
+        for j in range(train_images.shape[1]):
+            theta_mle[c][j] = (np.sum(np.where((train_images[:, j] == 1) & (train_labels[:, c] == 1), 1, 0))) / (np.sum(train_labels[:, c]))
         pi_mle[c] = (classes[c] / train_labels.shape[0])
     return theta_mle, pi_mle
 
@@ -116,8 +119,8 @@ def train_map_estimator(train_images, train_labels):
     theta_map = np.zeros((train_labels.shape[1], train_images.shape[1]))
     pi_map = np.zeros(train_labels.shape[1])
     for c in range(train_labels.shape[1]):
-        x_j = train_images[np.where(np.where(train_labels == 1)[1] == c)[0]]
-        theta_map[c] = (2+np.sum(x_j)) / (4+classes[c])
+        for j in range(train_images.shape[1]):
+            theta_map[c][j] = (2+np.sum(np.where((train_images[:, j] == 1) & (train_labels[:, c] == 1), 1, 0))) / (4+np.sum(train_labels[:, c]))
         pi_map[c] = (classes[c] / train_labels.shape[0])
     return theta_map, pi_map
 
@@ -131,10 +134,9 @@ def log_likelihood(images, theta, pi):
 
     # YOU NEED TO WRITE THIS PART
     log_like = np.zeros((images.shape[0], pi.shape[0]))
+    px = np.sum(np.exp(np.log(0.1) + images.dot(np.log(theta.T)) + (1. - images).dot(np.log(1. - theta.T))), axis=1)
     for c in range(pi.shape[0]):
-        for j in range(images.shape[0]):
-            prod = np.sum(images[j]*np.log(theta[c]) + (1-images[j])*np.log(1-theta[c]))
-            log_like[j, c] = prod
+        log_like[:, c] = np.log(0.1) + images.dot(np.log(theta[c])) + (1. - images).dot(np.log(1. - theta[c])) - np.log(px)
     return log_like
 
 
@@ -151,20 +153,26 @@ def accuracy(log_like, labels):
     Returns the accuracy based on predictions from log likelihood values"""
 
     # YOU NEED TO WRITE THIS PART
+    prediction = predict(log_like)
+    targets = np.argmax(labels, axis=1)
+    accuracy = accuracy_score(targets, prediction)
     return accuracy
 
 
 def image_sampler(theta, pi, num_images):
     """ Inputs: parameters theta and pi, and number of images to sample
     Returns the sampled images"""
-
     # YOU NEED TO WRITE THIS PART
+    c = np.random.choice(len(pi), num_images, p=pi)
+    sampled_images = np.zeros((num_images, theta.shape[1]))
+    for i in range(num_images):
+        for j in range(theta.shape[1]):
+            sampled_images[i,j] = np.random.binomial(1, p=theta[c][i][j])
     return sampled_images
 
 
 def main():
     N_data, train_images, train_labels, test_images, test_labels = load_mnist()
-
     # Fit MLE and MAP estimators
     theta_mle, pi_mle = train_mle_estimator(train_images, train_labels)
     theta_map, pi_map = train_map_estimator(train_images, train_labels)
@@ -187,12 +195,13 @@ def main():
     print("Test accuracy for MAP is ", test_accuracy_map)
 
     # Plot MLE and MAP estimators
-    save_images(theta_mle.T, 'mle.png')
-    save_images(theta_map.T, 'map.png')
+    # save_images(theta_mle, 'mle.png')
+    # save_images(theta_map, 'map.png')
+
 
     # Sample 10 images
-    sampled_images = image_sampler(theta_map, pi_map, 10)
-    save_images(sampled_images, 'sampled_images.png')
+    # sampled_images = image_sampler(theta_map, pi_map, 10)
+    # save_images(sampled_images, 'sampled_images.png')
 
 
 if __name__ == '__main__':

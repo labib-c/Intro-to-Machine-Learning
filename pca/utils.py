@@ -87,10 +87,9 @@ def load_data(filename, load2=True, load3=True):
   return inputs_train.T, inputs_valid.T, inputs_test.T, target_train.T, target_valid.T, target_test.T
 
 def classify(train_input, valid_input, train_target, k):
-  centered = valid_input - np.tile(np.mean(valid_input, axis=0), (valid_input.shape[0], 1))
+  centered = valid_input - np.tile(np.mean(train_input, axis=0), (valid_input.shape[0], 1))
   cov = np.cov(centered.T)
   U, S, V = np.linalg.svd(cov)
-  # new_val = U[:, :k]
 
   cen_train = train_input - np.tile(np.mean(train_input, axis=0), (train_input.shape[0], 1))
   cov_train = np.cov(cen_train.T)
